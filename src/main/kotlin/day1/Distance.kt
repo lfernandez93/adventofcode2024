@@ -4,7 +4,7 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 import kotlin.math.abs
 
-class DanceApplication
+class Distance
 
 fun main(args: Array<String>) {
     //read file
@@ -31,7 +31,7 @@ fun main(args: Array<String>) {
 
 fun readFile(): ExtractedLists {
     val filePath = "day1\\data.txt"
-    val inputStream = DanceApplication::class.java.classLoader.getResourceAsStream(filePath)
+    val inputStream = Distance::class.java.classLoader.getResourceAsStream(filePath)
     val reader = BufferedReader(InputStreamReader(inputStream))
     val leftList = ArrayList<Int>();
     val rightList = ArrayList<Int>();
