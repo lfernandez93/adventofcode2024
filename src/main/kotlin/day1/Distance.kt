@@ -1,9 +1,7 @@
 package day1
 
 import java.io.BufferedReader
-import java.io.File
 import java.io.InputStreamReader
-import java.util.LinkedList
 import kotlin.math.abs
 
 class DanceApplication
@@ -18,8 +16,17 @@ fun main(args: Array<String>) {
     //calculate distances
     val distances = calculateDistances(sortedLeftList, sortedRightList)
 
-    //sum all
+    //result of first part
     println(distances.sum())
+
+    //transform the right list into an incidence map.
+    val incidenceMap = toIncidenceMap(sortedRightList);
+
+    //calculate the similarity
+    val similarities = calculateSimilarities(sortedLeftList, incidenceMap)
+
+    //result similarity score, second part
+    println(similarities.sum())
 }
 
 fun readFile(): ExtractedLists {
@@ -49,4 +56,26 @@ fun calculateDistances(sortedLeftList: List<Int>, sortedRightList: List<Int>): L
         distances.add(abs(leftSideValue - rightSideValue))
     }
     return distances;
+}
+
+fun toIncidenceMap(rightList: List<Int>) : Map<Int, Int> {
+    val incidenceMap = HashMap<Int, Int>();
+    rightList.forEach { i ->
+        val incidence = incidenceMap[i]
+        if (incidence == null) {
+            incidenceMap[i] = 1;
+        } else {
+            incidenceMap[i] = incidence + 1
+        }
+    }
+    return incidenceMap
+}
+
+fun calculateSimilarities(sortedLeftList: List<Int>, incidenceMap: Map<Int, Int>): List<Int> {
+    val  similarities = ArrayList<Int>()
+    sortedLeftList.forEach { i ->
+        val multiplier = incidenceMap[i] ?: 0
+        similarities.add(i * multiplier)
+    }
+    return similarities
 }
