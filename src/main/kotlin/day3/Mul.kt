@@ -30,7 +30,7 @@ fun main(args: Array<String>) {
 }
 
 fun readFile(): List<String> {
-    val filePath = "day3\\data.txt"
+    val filePath = "day3\\rules.txt"
     val inputStream = Mul::class.java.classLoader.getResourceAsStream(filePath)
     val reader = BufferedReader(InputStreamReader(inputStream))
     val linesArray = ArrayList<String>()

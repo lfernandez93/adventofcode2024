@@ -69,7 +69,7 @@ fun matchesXMAS(grid: List<List<Char>>, i: Int, j: Int, di: Int, dj: Int, xmas: 
     return wordStr == xmas || wordStr.reversed() == xmas
 }
 fun readFile(): List<List<Char>> {
-    val filePath = "day4\\data.txt"
+    val filePath = "day4\\rules.txt"
     val inputStream = Grid::class.java.classLoader.getResourceAsStream(filePath)
     val reader = BufferedReader(InputStreamReader(inputStream))
     val twoDArray = ArrayList<ArrayList<Char>>()

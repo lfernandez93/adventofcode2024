@@ -24,7 +24,7 @@ fun main(args: Array<String>) {
 }
 
 fun readFile(): List<ExtractedLevels> {
-    val filePath = "day2\\data.txt"
+    val filePath = "day2\\rules.txt"
     val inputStream = Levels::class.java.classLoader.getResourceAsStream(filePath)
     val reader = BufferedReader(InputStreamReader(inputStream))
     val allLevels = ArrayList<ExtractedLevels>();

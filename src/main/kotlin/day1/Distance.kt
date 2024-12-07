@@ -30,7 +30,7 @@ fun main(args: Array<String>) {
 }
 
 fun readFile(): ExtractedLists {
-    val filePath = "day1\\data.txt"
+    val filePath = "day1\\rules.txt"
     val inputStream = Distance::class.java.classLoader.getResourceAsStream(filePath)
     val reader = BufferedReader(InputStreamReader(inputStream))
     val leftList = ArrayList<Int>();
