@@ -25,6 +25,17 @@ fun main() {
     println()
     println("antinodes=${antinodesPositions.size}")
     println()
+    println("_________________________")
+    println("part2")
+    println("_________________________")
+    mutableAntennasMap = antennasMap.map { it.toMutableList() }
+    val allAntinodesPositions = calculateAntinodesPositionsAcross(frequencies, antennasMap[0].size, antennasMap.size)
+    placeAntinodes(allAntinodesPositions, mutableAntennasMap)
+    drawMap(mutableAntennasMap)
+    println("_________________________")
+    println()
+    println("allAntinodes=${allAntinodesPositions.size}")
+
 
 }
 
@@ -68,6 +79,40 @@ fun calculateAntinodesPositions(positions: Map<Char, List<Pair<Int, Int>>>, xMax
 
     return antinodePositions
 }
+
+fun calculateAntinodesPositionsAcross(positions: Map<Char, List<Pair<Int, Int>>>, xMax: Int, yMax: Int): Set<Pair<Int, Int>> {
+    val antinodePositions = mutableSetOf<Pair<Int, Int>>()
+
+    positions.entries.forEach{
+        var freqPositions = it.value
+        for (i in freqPositions.indices) {
+            for (j in freqPositions.indices) {
+                if(i != j) {
+                    val posA = freqPositions[i]
+                    val posB = freqPositions[j]
+                    antinodePositions.add(posA)
+                    println("$posA = $posB")
+                    val dx = posA.first - posB.first
+                    val dy = posA.second - posB.second
+                    println("${dx},${dy}")
+                    var antinodeXPos = posA.first + dx
+                    var antinodeYPos = posA.second + dy
+
+                    do{
+                        if ((antinodeXPos in 0..<xMax) && (antinodeYPos in 0..<yMax)) {
+                            antinodePositions.add(Pair(antinodeXPos, antinodeYPos))
+                        }
+                        antinodeXPos += dx
+                        antinodeYPos += dy
+                    }while ((antinodeXPos in 0..<xMax) && (antinodeYPos in 0..<yMax))
+                }
+            }
+        }
+    }
+
+    return antinodePositions
+}
+
 
 fun findFrequenciesPositions(antennasMap: List<List<Char>>) : Map<Char, List<Pair<Int, Int>>> {
     val frequenciesPositions = HashMap<Char, ArrayList<Pair<Int, Int>>>()
