@@ -2,6 +2,26 @@ package day7
 
 import java.io.BufferedReader
 import java.io.InputStreamReader
+enum class Op {
+    ADD, MUL
+}
+
+fun generatePermutations(operators: Set<Op>, length: Int): List<List<Op>> {
+    // Base case: if length is 0, return a list with an empty list
+    if (length == 0) return listOf(emptyList())
+
+    // Recursive case: build permutations by adding each operator to permutations of (length - 1)
+    val smallerPermutations = generatePermutations(operators, length - 1)
+    val result = mutableListOf<List<Op>>()
+
+    for (perm in smallerPermutations) {
+        for (op in operators) {
+            result.add(perm + op)
+        }
+    }
+
+    return result
+}
 
 class Equation
 fun main() {
@@ -14,7 +34,7 @@ fun main() {
         it.key
     }
 
-    println(leSum)
+    //println(leSum)
 
     val newSum = eqs.entries.filter{
         canGetToTotal(it.key, it.value)
@@ -26,12 +46,38 @@ fun main() {
 
     var sum = 0L
     eqs.entries.forEach{
-        if(isValidPt2(it.key, it.value)) {
+        if(isValid(it.key, it.value)) {
             sum+=it.key
         }
     }
 
     println(sum)
+    val operators = setOf(Op.ADD, Op.MUL)
+    var accum = 0L
+    eqs.entries.forEach{
+        val target = it.key
+        val numbers = it.value
+        val ops = generatePermutations(operators, numbers.size - 1)
+        for (row in ops) {
+            var tot = 0L
+            for (i in row.indices) {
+                if(i == 0) {
+                    tot = numbers[0]
+                }
+
+                if(row[i] == Op.ADD) {
+                    tot += numbers[i+1]
+                } else {
+                    tot *= numbers[i+1]
+                }
+            }
+            if(tot == target) {
+                accum += target
+                break
+            }
+        }
+    }
+    println(accum)
 }
 
 fun isValid(target: Long, numbers: List<Long>) : Boolean {
