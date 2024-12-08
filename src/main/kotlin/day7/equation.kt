@@ -16,14 +16,17 @@ fun main() {
 
     println(leSum)
 
-    val newSum = eqs.entries.filter{
+    /*val newSum = eqs.entries.filter{
         canGetToTotal(it.key, it.value)
     }.sumOf {
         it.key
     }
 
-    println(newSum)
-
+    println(newSum)*/
+    //5 + 10 * 74 + 30
+    println(
+        canGetToTotal(3720, listOf(5, 10 , 74, 30))
+    )
 
 }
 
@@ -36,16 +39,20 @@ fun canGetToTotal(target: Long, numbers: List<Long>) : Boolean {
 //5: 3 2
 fun dec(target: Long, numbers: List<Long>, ith: Int): Boolean {
     if(ith == 0) {
+        println("target = $target, numbers = ${numbers[ith]}")
         return target == numbers[ith]
     }
-    //3769341064121
-    if(target.mod(numbers[ith]) == 0L) {
-        if (dec(target / numbers[ith], numbers, ith - 1)) {
-            return true
-        }
+
+
+    if (target % numbers[ith] == 0L && dec(target / numbers[ith], numbers, ith - 1)) {
+        return true
     }
 
-    return dec(target - numbers[ith], numbers, ith - 1)
+    if (dec(target - numbers[ith], numbers, ith - 1)) {
+        return true
+    }
+
+    return false
 }
 
 fun isEquationValid(target: Long, numbers: List<Long>): Boolean{
