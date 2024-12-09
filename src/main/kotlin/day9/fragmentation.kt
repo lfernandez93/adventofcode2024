@@ -7,58 +7,52 @@ import java.util.Stack
 class Fragmentation
 
 fun main() {
-    //val input = readFile()
-    val input = "2333133121414131402".map { it.digitToInt() }.toCollection(ArrayList())
-    var count = 0
-    var inputCount = 0
+    val input = readFile()
+    var idCount = 0
+    var index = 0
+
     //explode
-    val exploded = input.joinToString(
-        separator = "",
-        transform = {
-            val isEven = inputCount % 2 == 0
-            var space = ""
-            if (it > 0) {
-                for (i in 0..<it) {
-                    space += if (isEven) "$count" else "."
-                }
-            }
-            inputCount++
-            if (isEven) count++
-            space
+    val exploded = ArrayList<String>()
+    input.forEach {
+        val isEven = index % 2 == 0
+        for (i in 0..<it) {
+            exploded.add(if (isEven) "$idCount" else ".")
         }
-    )
-    //println(exploded)
+        index++
+        if (isEven) idCount++
+    }
 
     //compact
     val mutableExploded = exploded.toMutableList()
-    var stackOfNumbers = buildStackOfNumberPositions(mutableExploded)
+    val stackOfNumbers = buildStackOfNumberPositions(mutableExploded)
     var lastNPos = stackOfNumbers.pop()
     for ((ith, c) in mutableExploded.withIndex()) {
-        if (c == '.' && ith < lastNPos) {
+        if (c == "." && ith < lastNPos) {
             val toSwap = mutableExploded[lastNPos]
             val dot = mutableExploded[ith]
             mutableExploded[ith] = toSwap
             mutableExploded[lastNPos] = dot
             lastNPos = stackOfNumbers.pop()
-            //println(mutableExploded.joinToString(separator = ""))
-        } else if (ith >= lastNPos) {
+        }
+    }
+
+    var checksum = 0L
+    for ((counter, char) in mutableExploded.withIndex()) {
+        if ("." != char) {
+            checksum += (counter * char.toInt())
+        } else {
             break
         }
-
     }
-    var pos = 0
-    val checkSum = mutableExploded
-        .filter { it.isDigit() }
-        .sumOf {
-            pos++ * it.digitToInt()
-        }
-    println(checkSum)
+
+    println(checksum)
+
 }
 
-fun buildStackOfNumberPositions(str: MutableList<Char>): Stack<Int> {
+fun buildStackOfNumberPositions(str: MutableList<String>): Stack<Int> {
     val stackOfPositions = Stack<Int>()
-    for ((counter, char) in str.withIndex()) {
-        if (char.isDigit()) {
+    for ((counter, chain) in str.withIndex()) {
+        if ("." != chain) {
             stackOfPositions.add(counter)
         }
     }
