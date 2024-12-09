@@ -123,10 +123,10 @@ fun dec(target: Long, numbers: List<Long>, ith: Int): Boolean {
     if(target <= 0) {
         return false
     }
+
     if(ith == 0) {
         return target == numbers[ith]
     }
-
 
     if (target % numbers[ith] == 0L && dec(target / numbers[ith], numbers, ith - 1)) {
         return true
