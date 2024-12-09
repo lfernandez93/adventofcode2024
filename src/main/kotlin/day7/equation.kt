@@ -3,7 +3,7 @@ package day7
 import java.io.BufferedReader
 import java.io.InputStreamReader
 enum class Op {
-    ADD, MUL
+    ADD, MUL, CONCAT
 }
 
 fun generatePermutations(operators: Set<Op>, length: Int): List<List<Op>> {
@@ -28,49 +28,42 @@ fun main() {
     val eqs = readFile()
 
     //part1
-    val leSum = eqs.entries.filter {
-        isEquationValid(it.key, it.value)
-    }.sumOf {
-        it.key
-    }
+    val leSum = eqs.filter {
+        isEquationValid(it.first, it.second)
+    }.sumOf { it.first }
 
-    //println(leSum)
+    println(leSum)
 
-    val newSum = eqs.entries.filter{
-        canGetToTotal(it.key, it.value)
-    }.sumOf {
-        it.key
-    }
-
-    println(newSum)
-
-    var sum = 0L
-    eqs.entries.forEach{
-        if(isValid(it.key, it.value)) {
-            sum+=it.key
+    /*var sum = 0L
+    eqs.forEach{
+        if(isValidPt2(it.first, it.second)) {
+            sum+=it.first
         }
     }
 
-    println(sum)
-    val operators = setOf(Op.ADD, Op.MUL)
+    println(sum)*/
+
+    val operators = setOf(Op.ADD, Op.MUL, Op.CONCAT)
     var accum = 0L
-    eqs.entries.forEach{
-        val target = it.key
-        val numbers = it.value
+    eqs.forEach{
+        val target = it.first
+        val numbers = it.second
         val ops = generatePermutations(operators, numbers.size - 1)
         for (row in ops) {
-            var tot = 0L
+            var tot = numbers[0]
+            var op = "$tot"
             for (i in row.indices) {
-                if(i == 0) {
-                    tot = numbers[0]
-                }
-
                 if(row[i] == Op.ADD) {
                     tot += numbers[i+1]
-                } else {
+                    op += "+ ${numbers[i + 1]} "
+                } else if(row[i] == Op.MUL) {
                     tot *= numbers[i+1]
+                    op += "* ${numbers[i+1]} "
+                } else {
+                    tot = "$tot${numbers[i+1]}".toLong()
                 }
             }
+
             if(tot == target) {
                 accum += target
                 break
@@ -78,6 +71,8 @@ fun main() {
         }
     }
     println(accum)
+
+
 }
 
 fun isValid(target: Long, numbers: List<Long>) : Boolean {
@@ -124,9 +119,6 @@ fun canGetToTotal(target: Long, numbers: List<Long>) : Boolean {
     return dec(target, numbers, numbers.lastIndex)
 }
 
-//20: 10 10
-//6: 3 2
-//5: 3 2
 fun dec(target: Long, numbers: List<Long>, ith: Int): Boolean {
     if(target <= 0) {
         return false
@@ -162,8 +154,8 @@ fun joinNumbers(ith: Int, currentValue: Long, target: Long, numbers: List<Long>)
 
     return joinNumbers(ith + 1, currentValue + numbers[ith], target, numbers)
 }
-fun readFile(): Map<Long,List<Long>> {
-    val equations = HashMap<Long,List<Long>>()
+fun readFile(): List<Pair<Long,List<Long>>> {
+    val equations = ArrayList<Pair<Long,List<Long>>>()
     //val filePath = "day7\\small_data.txt";
     val filePath = "day7\\data.txt";
     val inputStream = Equation::class.java.classLoader.getResourceAsStream(filePath)
@@ -175,7 +167,7 @@ fun readFile(): Map<Long,List<Long>> {
             val ops = file[1].trim().split(" ")
                 .map { it.toLong() }
                 .toCollection(ArrayList())
-            equations[eqResult] = ops
+            equations.add(Pair(eqResult, ops))
         }
     }
     return equations
