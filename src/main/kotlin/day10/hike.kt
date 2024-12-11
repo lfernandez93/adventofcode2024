@@ -1,6 +1,5 @@
 package day10
 
-import day8.Antennas
 import java.io.BufferedReader
 import java.io.InputStreamReader
 
