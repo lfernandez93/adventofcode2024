@@ -11,11 +11,21 @@ fun main() {
     val map = readFile()
     val startingPoints = searchStartingPoints(map)
 
-    val sumOf = startingPoints.sumOf {
+    //pt1
+    var sumOf = startingPoints.sumOf {
         val nines = mutableSetOf<Pair<Int, Int>>()
         searchPath(map, it.second , it.first, 0, true, nines)
         nines.size
     }
+    println(sumOf)
+
+    //pt2
+    sumOf = startingPoints.sumOf {
+        val nines = mutableListOf<Pair<Int, Int>>()
+        searchDistinctPath(map, it.second , it.first, 0, true, nines)
+        nines.size
+    }
+
     println(sumOf)
 }
 
@@ -52,6 +62,31 @@ fun searchPath(map: List<List<Int>>, dx: Int, dy: Int,
         searchPath(map, dx, dy + 1, visiting, pathVisited = pathVisited)
         searchPath(map, dx + 1, dy, visiting, pathVisited = pathVisited)
         searchPath(map, dx - 1, dy, visiting, pathVisited = pathVisited)
+    }
+
+}
+
+
+fun searchDistinctPath(map: List<List<Int>>, dx: Int, dy: Int,
+               previous: Int,
+               beginning: Boolean = false,
+               pathVisited: MutableList<Pair<Int, Int>>) {
+    if((dy >= map.size || dy < 0)  || (dx >= map[0].size || dx < 0)) {
+        return
+    }
+
+    val visiting = map[dy][dx]
+
+    if (previous + 1 == visiting || beginning)  {
+        if(visiting == 9) {
+            pathVisited.add(Pair(dx, dy))
+            return
+        }
+
+        searchDistinctPath(map, dx, dy - 1, visiting, pathVisited = pathVisited)
+        searchDistinctPath(map, dx, dy + 1, visiting, pathVisited = pathVisited)
+        searchDistinctPath(map, dx + 1, dy, visiting, pathVisited = pathVisited)
+        searchDistinctPath(map, dx - 1, dy, visiting, pathVisited = pathVisited)
     }
 
 }
