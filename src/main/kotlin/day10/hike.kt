@@ -24,7 +24,6 @@ fun main() {
         searchDistinctPath(map, it.second , it.first, 0, true, nines)
         nines.size
     }
-
     println(sumOf)
 }
 
