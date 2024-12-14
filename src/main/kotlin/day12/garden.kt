@@ -7,11 +7,12 @@ import kotlin.io.path.fileVisitor
 class Garden
 
 fun main() {
-    var gardenMap = readFile()
+    val gardenMap = readFile()
 
-    gardenMap.forEach { println(it.joinToString("")) }
-    var locationsVisited = mutableSetOf<Pair<Int, Int>>()
+    //gardenMap.forEach { println(it.joinToString("")) }
+    val locationsVisited = mutableSetOf<Pair<Int, Int>>()
     var sum = 0L
+    var sumSide = 0L
     for (i in gardenMap.indices) {
         for (j in gardenMap[i].indices) {
             val visiting = Pair(i, j)
@@ -19,13 +20,14 @@ fun main() {
                 val locs =  findArea(gardenMap, visiting)
                 val perimeter = calculatePerimeter(locs)
                 val sides = calculateSides(locs)
-                println("$locs ${gardenMap[i][j]} $sides")
                 sum += (locs.size * perimeter)
+                sumSide += (locs.size * sides)
                 locationsVisited.addAll(locs)
             }
         }
     }
     println(sum)
+    println(sumSide)
 }
 
 fun calculateSides(locs: MutableSet<Pair<Int, Int>>): Int {
@@ -33,8 +35,8 @@ fun calculateSides(locs: MutableSet<Pair<Int, Int>>): Int {
         return 4
     }
 
-    var leCount = 0
-    val borders = mutableSetOf<Pair<Pair<Int, Int>,Pair<Int, Int>>>()
+    val borders = mutableListOf<Int>()
+    val borderCoords = mutableListOf<Pair<Char, Pair<Int, Int>>>()
 
     for(loc in locs) {
         val y = loc.first
@@ -42,14 +44,36 @@ fun calculateSides(locs: MutableSet<Pair<Int, Int>>): Int {
 
         val top = Pair(y - 1, x)
         val bottom = Pair(y + 1, x)
-        val left = Pair(y , x - 1)
-        val right = Pair(y, x + 1)
 
+        if (!locs.contains(top)) {
+            borderCoords.add(Pair('T', loc))
+        }
+
+        if (!locs.contains(bottom)) {
+            borderCoords.add(Pair('B', loc))
+        }
 
     }
 
+    for(borderCoord in borderCoords) {
+        val type = borderCoord.first
+        val loc =  borderCoord.second
+        val y = loc.first
+        val x = loc.second
 
-    return leCount
+        val left = Pair(type, Pair(y, x + 1))
+        val right = Pair(type, Pair(y, x - 1))
+
+        if(!borderCoords.contains(left)) {
+            borders.add(1)
+        }
+
+        if(!borderCoords.contains(right)) {
+            borders.add(1)
+        }
+    }
+
+    return borders.sum()
 }
 
 fun calculatePerimeter(locs: MutableSet<Pair<Int, Int>>): Int {
@@ -103,8 +127,8 @@ fun getAreas(gardenMap: List<List<Char>>,
 
 fun readFile() : List<List<Char>> {
     val leMap = ArrayList<List<Char>>()
-    val filePath = "day12\\small_data.txt";
-    //val filePath = "day12\\data.txt";
+    //val filePath = "day12\\small_data.txt";
+    val filePath = "day12\\data.txt";
     val inputStream = Garden::class.java.classLoader.getResourceAsStream(filePath)
     val reader = BufferedReader(InputStreamReader(inputStream))
     reader.useLines { lines ->
