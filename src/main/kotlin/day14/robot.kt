@@ -11,6 +11,11 @@ fun main() {
     val wide = 101
     val tall = 103
     //val leMap = buildMap(11, 7)
+    solveForPart1(roboLocs, wide, tall)
+    solveForPart2(roboLocs, wide, tall)
+}
+
+fun solveForPart1(roboLocs: List<RoboLoc>, wide: Int, tall: Int) {
     val locations = roboLocs.map { roboMove(it, wide, tall, 0) }
         .toCollection(mutableListOf())
 
@@ -23,7 +28,40 @@ fun main() {
 
     val product = quadrants.values.reduce{ v, k -> v * k}
     println(product)
+}
 
+fun solveForPart2(roboLocs: List<RoboLoc>, wide: Int, tall: Int) {
+    var secs = 0
+    while(true) {
+        if(secs>0) {
+            for (i in 0..tall) {
+                println()
+            }
+        }
+        val locations = roboLocs.map {
+            roboMovePt2(it, wide, tall)
+        }.toCollection(mutableListOf())
+
+        if(isDistinct(locations)) {
+            val leMap = buildMap(wide, tall)
+            locations.forEach { placeRobot(leMap, it) }
+            drawMap(leMap)
+            println("SECS ${secs+1}")
+            break
+        }
+        secs++
+    }
+}
+
+fun isDistinct(locs: List<Pair<Int, Int>>) : Boolean {
+    val lelocs = mutableSetOf<Pair<Int,Int>>()
+    locs.forEach {
+        if(lelocs.contains(it)) {
+            return false
+        }
+        lelocs.add(it)
+    }
+    return true
 }
 
 fun buildQuadrants(locs: List<Pair<Int, Int>>, midWide: Int, midTall: Int) : MutableMap<Int, Int> {
@@ -84,6 +122,33 @@ fun roboMove(loc: RoboLoc, wide: Int, tall: Int, secs: Int): Pair<Int, Int> {
 
     loc.origin = Pair(newX, newY)
     return roboMove(loc, wide, tall, secs + 1)
+}
+
+fun roboMovePt2(loc: RoboLoc, wide: Int, tall: Int) : Pair<Int, Int> {
+    val x = loc.origin.first
+    val y = loc.origin.second
+    val dx = loc.velocity.first
+    val dy = loc.velocity.second
+
+    var newX = x + dx
+    var newY = y + dy
+
+    if(newX > wide - 1 || newX < 0) {
+        newX = wide - (abs(x + dx))
+        if(newX < 0 ) {
+            newX = abs(newX)
+        }
+    }
+
+    if(newY > tall - 1 || newY < 0) {
+        newY = tall - (abs(y + dy))
+        if(newY < 0 ) {
+            newY = abs(newY)
+        }
+    }
+
+    loc.origin = Pair(newX, newY)
+    return loc.origin
 }
 
 
