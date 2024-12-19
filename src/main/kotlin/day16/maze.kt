@@ -1,16 +1,20 @@
 package day16
 
+import java.awt.Point
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.util.*
 
 data class Maze(val pos: Pair<Int, Int>, val currDir: Pair<Int, Int>, var accum: Int)
 
+data class MazeP2(val pos: Pair<Int, Int>, val currDir: Pair<Int, Int>, var accum: Int, var nodes: MutableSet<Pair<Int, Int>>)
+
 fun main() {
     val map = readFile()
     val startLoc = findStart(map)
 
     move(startLoc, map)
+    movePt2(startLoc, map)
 }
 
 fun move(startLoc: Pair<Int, Int>, map: MutableList<MutableList<Char>>) {
@@ -62,6 +66,83 @@ fun move(startLoc: Pair<Int, Int>, map: MutableList<MutableList<Char>>) {
     }
 
     println(leLocs[findEnd(map)])
+}
+
+fun movePt2(startLoc: Pair<Int, Int>, map: MutableList<MutableList<Char>>) {
+    val directions = listOf(
+        Pair(-1, 0),
+        Pair(0, 1),
+        Pair(1, 0),
+        Pair(0, -1)
+    )
+
+    val toVisit : Queue<MazeP2> = LinkedList()
+    val positions = mutableSetOf<Pair<Int, Int>>()
+    toVisit.add(MazeP2(startLoc, directions[1], 0, positions))
+    val leLocs = mutableMapOf<Pair<Pair<Int, Int>, Pair<Int, Int>>, Int>()
+    var lowestScore = Integer.MAX_VALUE
+    val valueToPositions = mutableMapOf<Int, MutableSet<Pair<Int, Int>>>()
+
+    while(!toVisit.isEmpty()) {
+        val currVisit = toVisit.poll()
+        val loc = currVisit.pos
+        val x = loc.second
+        val y = loc.first
+        val currLocVal = map[y][x]
+        val accum = currVisit.accum
+        val currDir = currVisit.currDir
+
+        if (accum > lowestScore) {
+            continue
+        }
+
+        if(currLocVal == '#') {
+            continue
+        }
+
+        if(currVisit.nodes.contains(loc)) {
+            continue
+        }
+
+        currVisit.nodes.add(loc)
+
+        val cost = leLocs[Pair(loc, currDir)]
+
+        if(cost != null) {
+            if(cost >= accum) {
+                leLocs[Pair(loc, currDir)] = accum
+            } else {
+                continue
+            }
+        } else {
+            leLocs[Pair(loc, currDir)] = accum
+        }
+
+        if(currLocVal == 'E') {
+            if(accum <= lowestScore) {
+                lowestScore = accum
+                var positionSet = valueToPositions[lowestScore]
+
+                if (positionSet == null) {
+                    positionSet = mutableSetOf()
+                }
+
+                positionSet.addAll(currVisit.nodes)
+                valueToPositions[lowestScore] = positionSet
+            }
+        }
+
+
+        for(dir in directions) {
+            val sofar = if (dir != currDir) accum + 1001 else accum + 1
+            val visitedSoFar = mutableSetOf<Pair<Int, Int>>()
+            visitedSoFar.addAll(currVisit.nodes)
+            toVisit.add(MazeP2(Pair(loc.first + dir.first, loc.second + dir.second), dir, sofar, visitedSoFar))
+        }
+
+    }
+
+    valueToPositions[lowestScore]?.let { println(it.size) }
 }
 
 fun readFile(): MutableList<MutableList<Char>> {
